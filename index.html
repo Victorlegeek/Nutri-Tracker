@@ -1,352 +1,1011 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NutriTracker — Suivi nutritionnel local</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriTracker — Suivi nutritionnel Python</title>
+  <meta name="description" content="Application desktop Python + Tkinter pour suivre calories, macros, santé et composition corporelle. Gratuit, open source, IA intégrée." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset & Variables ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0a0a0f;
+      --surface:    #13131a;
+      --surface2:   #1a1a24;
+      --surface3:   #222230;
+      --border:     #2a2a3a;
+      --accent:     #7c6aff;
+      --accent2:    #00c896;
+      --accent3:    #ff6b81;
+      --text:       #f0f0f5;
+      --text-muted: #6b7280;
+      --text-dim:   #3f4150;
+      --success:    #22c55e;
+      --warning:    #f59e0b;
+      --danger:     #ef4444;
+      --r:          14px;
+      --r-sm:       8px;
+      --r-lg:       20px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    .link-dotted {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 4px;
+      transition: color .2s;
+    }
+    .link-dotted:hover {
+      color: var(--accent);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* ── Bruit de fond subtil ─────────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(124,106,255,.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,200,150,.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Nav ───────────────────────────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,15,.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; height: 62px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.1rem; font-weight: 700; color: var(--text);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none;
+      font-size: .875rem; padding: 6px 14px; border-radius: 8px;
+      transition: all .2s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--surface2); }
+    .btn-github {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--accent); color: white !important;
+      padding: 8px 18px !important; border-radius: 10px !important;
+      font-weight: 600; transition: all .2s !important;
+    }
+    .btn-github:hover { background: #6a59e0 !important; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124,106,255,.3); }
+
+    /* ── Hero ──────────────────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      max-width: 1200px; margin: 0 auto;
+      padding: 110px 32px 80px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(124,106,255,.12); border: 1px solid rgba(124,106,255,.3);
+      color: var(--accent); padding: 6px 16px; border-radius: 100px;
+      font-size: .8rem; font-weight: 600; letter-spacing: .06em;
+      text-transform: uppercase; margin-bottom: 28px;
+    }
+    .hero-badge::before { content: '●'; font-size: .5rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.3 } }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -.03em;
+      margin-bottom: 24px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-desc {
+      font-size: 1.15rem; color: var(--text-muted);
+      max-width: 620px; margin: 0 auto 44px;
+    }
+    .hero-actions {
+      display: flex; align-items: center; justify-content: center;
+      gap: 14px; flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: white;
+      padding: 14px 28px; border-radius: 12px;
+      font-weight: 700; font-size: 1rem; text-decoration: none;
+      transition: all .2s; box-shadow: 0 0 0 0 rgba(124,106,255,.4);
+    }
+    .btn-primary:hover {
+      background: #6a59e0; transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(124,106,255,.35);
+    }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--surface2); color: var(--text);
+      border: 1px solid var(--border);
+      padding: 14px 28px; border-radius: 12px;
+      font-weight: 600; font-size: 1rem; text-decoration: none;
+      transition: all .2s;
+    }
+    .btn-secondary:hover { background: var(--surface3); transform: translateY(-2px); }
+
+    /* ── Stats hero ────────────────────────────────────────────────────────── */
+    .hero-stats {
+      display: flex; justify-content: center; gap: 48px;
+      margin-top: 64px; flex-wrap: wrap;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-num {
+      font-size: 2rem; font-weight: 800; color: var(--text);
+      display: block;
+    }
+    .hero-stat-num span { color: var(--accent); }
+    .hero-stat-label { font-size: .8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; }
+
+    /* ── App Preview (mockup terminal) ────────────────────────────────────── */
+    .preview-section {
+      max-width: 1200px; margin: 0 auto; padding: 0 32px 100px;
+    }
+    .app-mockup {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
+    }
+    .mockup-titlebar {
+      background: var(--surface2);
+      padding: 14px 20px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ff5f56; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #27c93f; }
+    .mockup-title {
+      flex: 1; text-align: center;
+      font-size: .8rem; color: var(--text-muted);
+    }
+    .mockup-body {
+      display: grid; grid-template-columns: 200px 1fr;
+      min-height: 480px;
+    }
+    /* Sidebar mockup */
+    .mockup-sidebar {
+      background: var(--surface2);
+      border-right: 1px solid var(--border);
+      padding: 20px 12px;
+    }
+    .mockup-logo {
+      font-size: .9rem; font-weight: 700; color: var(--accent);
+      padding: 0 8px 20px; border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .mockup-nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 8px;
+      font-size: .8rem; color: var(--text-muted);
+      margin-bottom: 2px; cursor: pointer; transition: all .2s;
+    }
+    .mockup-nav-item.active {
+      background: var(--accent); color: white; font-weight: 600;
+    }
+    .mockup-nav-item:not(.active):hover { background: var(--surface3); color: var(--text); }
+
+    /* Contenu mockup */
+    .mockup-content { padding: 24px; }
+    .mockup-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+    .mockup-date { font-size: 1.4rem; font-weight: 700; }
+    .mockup-add-btn {
+      background: var(--accent); color: white;
+      padding: 8px 16px; border-radius: 8px;
+      font-size: .8rem; font-weight: 600;
+    }
+    /* Cartes macros */
+    .mockup-macros {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+      margin-bottom: 16px;
+    }
+    .mockup-macro-card {
+      background: var(--surface2); border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .mockup-macro-label { font-size: .65rem; color: var(--text-muted); margin-bottom: 2px; }
+    .mockup-macro-val { font-size: 1rem; font-weight: 700; }
+    .mockup-macro-sub { font-size: .6rem; color: var(--text-muted); }
+
+    /* Barre progression */
+    .mockup-prog { margin-bottom: 16px; }
+    .mockup-prog-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+    }
+    .mockup-prog-label { font-size: .7rem; color: var(--text-muted); width: 80px; }
+    .mockup-prog-bar {
+      flex: 1; height: 6px; background: var(--surface3);
+      border-radius: 3px; overflow: hidden;
+    }
+    .mockup-prog-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+    .mockup-prog-pct { font-size: .65rem; color: var(--text-muted); width: 40px; text-align: right; }
+
+    /* Table journal */
+    .mockup-table { background: var(--surface2); border-radius: 10px; overflow: hidden; }
+    .mockup-table-header {
+      display: grid; grid-template-columns: 100px 1fr 60px 50px 50px 50px;
+      gap: 8px; padding: 8px 12px;
+      background: var(--surface3);
+      font-size: .65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em;
+    }
+    .mockup-table-row {
+      display: grid; grid-template-columns: 100px 1fr 60px 50px 50px 50px;
+      gap: 8px; padding: 9px 12px; font-size: .75rem;
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+    .mockup-table-row:hover { background: var(--surface3); }
+    .mockup-table-row:last-child { border-bottom: none; }
+    .tag {
+      display: inline-block; padding: 2px 6px; border-radius: 4px;
+      font-size: .6rem; font-weight: 600;
+    }
+    .tag-dej { background: rgba(74,222,128,.12); color: #4ade80; }
+    .tag-din { background: rgba(56,189,248,.12); color: #38bdf8; }
+    .tag-col { background: rgba(251,191,36,.12); color: #fbbf24; }
+
+    /* ── Features grid ─────────────────────────────────────────────────────── */
+    section { position: relative; z-index: 1; }
+    .section-header {
+      text-align: center; max-width: 640px; margin: 0 auto 64px;
+    }
+    .section-label {
+      display: inline-block;
+      font-size: .75rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
+      letter-spacing: -.025em; line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .section-desc { color: var(--text-muted); font-size: 1rem; }
+
+    .features-section {
+      max-width: 1200px; margin: 0 auto; padding: 100px 32px;
+    }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 28px;
+      transition: all .25s;
+      position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-card, var(--accent)), transparent);
+      opacity: 0; transition: opacity .3s;
+    }
+    .feature-card:hover { border-color: var(--border-hover, var(--accent));
+                           transform: translateY(-3px);
+                           box-shadow: 0 20px 40px rgba(0,0,0,.4); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      font-size: 2rem; margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: center;
+      width: 56px; height: 56px;
+      background: var(--surface2); border-radius: 12px;
+    }
+    .feature-title { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .feature-desc { font-size: .875rem; color: var(--text-muted); line-height: 1.6; }
+    .feature-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+    .feature-tag {
+      font-size: .7rem; padding: 3px 8px; border-radius: 6px;
+      background: var(--surface3); color: var(--text-muted); font-weight: 500;
+    }
+
+    /* ── Structure fichiers ────────────────────────────────────────────────── */
+    .structure-section {
+      max-width: 1200px; margin: 0 auto; padding: 0 32px 100px;
+    }
+    .structure-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    }
+    .code-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .code-header {
+      background: var(--surface2);
+      padding: 12px 20px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: .8rem; color: var(--text-muted); font-weight: 600;
+    }
+    .code-header .dot { width: 8px; height: 8px; }
+    pre {
+      padding: 20px;
+      font-family: 'Fira Code', monospace;
+      font-size: .8rem; line-height: 1.8;
+      color: var(--text-muted);
+      overflow-x: auto;
+    }
+    .hl-green  { color: #4ade80; }
+    .hl-blue   { color: #38bdf8; }
+    .hl-purple { color: #a78bfa; }
+    .hl-orange { color: #fb923c; }
+    .hl-pink   { color: #f472b6; }
+    .hl-dim    { color: var(--text-dim); }
+
+    /* ── Install steps ─────────────────────────────────────────────────────── */
+    .install-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      border-radius: 20px;
+      width: 90%;
+      margin: 0 auto;
+    }
+    .install-inner {
+      max-width: 1200px; margin: 0 auto; padding: 100px 32px;
+    }
+    .steps { display: flex; flex-direction: column; gap: 16px; max-width: 720px; margin: 0 auto; }
+    .step {
+      display: flex; gap: 20px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 24px;
+      transition: border-color .2s;
+    }
+    .step:hover { border-color: var(--accent); }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--accent); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: .9rem; flex-shrink: 0;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-weight: 700; margin-bottom: 6px; }
+    .step-desc { font-size: .875rem; color: var(--text-muted); margin-bottom: 10px; }
+    .step-cmd {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: .82rem; color: var(--accent2);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .step-cmd::before { content: '$'; color: var(--text-dim); }
+
+    /* ── Modules IA ────────────────────────────────────────────────────────── */
+    .ia-section {
+      max-width: 1200px; margin: 0 auto; padding: 100px 32px;
+    }
+    .ia-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    }
+    .ia-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r); padding: 28px;
+      position: relative; overflow: hidden;
+    }
+    .ia-card.highlight {
+      border-color: rgba(124,106,255,.4);
+      background: linear-gradient(135deg, var(--surface) 0%, rgba(124,106,255,.06) 100%);
+    }
+    .ia-card-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 6px; margin-bottom: 14px;
+    }
+    .badge-free { background: rgba(34,197,94,.12); color: var(--success); }
+    .badge-groq { background: rgba(124,106,255,.12); color: var(--accent); }
+    .ia-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
+    .ia-card p { font-size: .875rem; color: var(--text-muted); line-height: 1.65; }
+    .ia-features { list-style: none; margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+    .ia-features li {
+      display: flex; align-items: center; gap: 10px;
+      font-size: .85rem; color: var(--text-muted);
+    }
+    .ia-features li::before { content: '✓'; color: var(--accent2); font-weight: 700; }
+
+    /* ── Tech stack ────────────────────────────────────────────────────────── */
+    .tech-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      width: 90%;
+      margin: 0 auto;
+      border-radius: 20px;
+    }
+    .tech-inner {
+      max-width: 1200px; margin: 0 auto; padding: 80px 32px;
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .tech-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 16px 18px;
+      text-align: center; transition: all .2s;
+    }
+    .tech-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .tech-icon { font-size: 1.6rem; margin-bottom: 8px; }
+    .tech-name { font-size: .85rem; font-weight: 600; margin-bottom: 2px; }
+    .tech-role { font-size: .72rem; color: var(--text-muted); }
+
+    /* ── Footer ────────────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      max-width: 1200px; margin: 0 auto;
+      padding: 48px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-weight: 700; color: var(--text); }
+    .footer-logo span { color: var(--accent); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a {
+      color: var(--text-muted); text-decoration: none;
+      font-size: .875rem; transition: color .2s;
+    }
+    .footer-links a:hover { color: var(--text); }
+    .footer-copy { font-size: .8rem; color: var(--text-dim); }
+
+    /* ── Responsive ────────────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links a:not(.btn-github) { display: none; }
+      .mockup-body { grid-template-columns: 1fr; }
+      .mockup-sidebar { display: none; }
+      .mockup-macros { grid-template-columns: repeat(3,1fr); }
+      .structure-grid, .ia-grid { grid-template-columns: 1fr; }
+      .tech-inner { grid-template-columns: repeat(2, 1fr); }
+      .hero-stats { gap: 28px; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
 </head>
 <body>
 
+<!-- ── NAV ─────────────────────────────────────────────────────────────────── -->
 <nav>
   <div class="nav-inner">
-    <span class="logo"><span class="logo-dot"></span>NutriTracker</span>
-    <ul class="nav-links">
-      <li><a href="#fonctionnalites">Fonctionnalites</a></li>
-      <li><a href="#prerequis">Pre-requis</a></li>
-      <li><a href="#structure">Structure</a></li>
-      <li><a href="#installation">Installation</a></li>
-    </ul>
-    <a href="https://github.com/Vindows/NutriTracker/releases" class="nav-cta">
-      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Telecharger
-    </a>
+    <a class="nav-logo" href="#">🥗 <span>Nutri</span>Tracker</a>
+    <div class="nav-links">
+      <a href="#features">Fonctionnalités</a>
+      <a href="#install">Installation</a>
+      <a href="#structure">Structure</a>
+      <a href="#ia">IA</a>
+      <a href="https://github.com/Victorlegeek/Nutri-Tracker" class="btn-github" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        GitHub
+      </a>
+    </div>
   </div>
 </nav>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-badge"><span>MIT</span> open source &mdash; Windows / macOS / Linux</div>
-  <h1>Suivi nutritionnel<br><em>local, precis, gratuit.</em></h1>
-  <p class="hero-desc">Application de bureau Python pour tracker vos apports, vos macros, votre sante et vos supplements. Tout reste sur votre machine, en JSON, sans compte ni abonnement.</p>
+<!-- ── HERO ────────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-badge">Open Source · Python · Tkinter · Gratuit</div>
+  <h1>Suivez votre nutrition<br>comme un <em>professionnel</em></h1>
+  <p class="hero-desc">
+    Application desktop complète pour tracker calories, macros, composition corporelle
+    et bien-être. IA intégrée via Groq, 77+ aliments, graphiques avancés.
+  </p>
   <div class="hero-actions">
-    <a href="https://github.com/Vindows/NutriTracker/releases" class="btn-primary">
-      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Telecharger la derniere version
+    <a href="https://github.com/Victorlegeek/Nutri-Tracker/releases" class="btn-primary">
+      ⬇ Télécharger
     </a>
-    <a href="https://github.com/Vindows/NutriTracker" class="btn-ghost">
-      <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-      Voir sur GitHub
+    <a href="https://github.com/Victorlegeek/Nutri-Tracker" class="btn-secondary" target="_blank">
+      Voir le code source →
     </a>
   </div>
   <div class="hero-stats">
     <div class="hero-stat">
-      <div class="stat-val">70+</div>
-      <div class="stat-lbl">aliments inclus</div>
+      <span class="hero-stat-num">77<span>+</span></span>
+      <span class="hero-stat-label">Aliments inclus</span>
     </div>
     <div class="hero-stat">
-      <div class="stat-val">8</div>
-      <div class="stat-lbl">macronutriments suivis</div>
+      <span class="hero-stat-num">9</span>
+      <span class="hero-stat-label">Pages & modules</span>
     </div>
     <div class="hero-stat">
-      <div class="stat-val">0</div>
-      <div class="stat-lbl">donnee envoyee en ligne</div>
+      <span class="hero-stat-num">0<span>€</span></span>
+      <span class="hero-stat-label">100% gratuit</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">2<span>k+</span></span>
+      <span class="hero-stat-label">Lignes de code</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── APP MOCKUP ──────────────────────────────────────────────────────────── -->
+<div class="preview-section">
+  <div class="app-mockup">
+    <div class="mockup-titlebar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <div class="mockup-title">NutriTracker — Suivi Nutritionnel</div>
+    </div>
+    <div class="mockup-body">
+      <!-- Sidebar -->
+      <div class="mockup-sidebar">
+        <div class="mockup-logo">🥗 NutriTracker</div>
+        <div class="mockup-nav-item active">📅 Journal du jour</div>
+        <div class="mockup-nav-item">🔍 Aliments</div>
+        <div class="mockup-nav-item">🎯 Objectifs</div>
+        <div class="mockup-nav-item">📈 Graphiques</div>
+        <div class="mockup-nav-item">🏥 Santé & Forme</div>
+        <div class="mockup-nav-item">📊 Statistiques</div>
+        <div class="mockup-nav-item">👤 Profil</div>
+        <div class="mockup-nav-item">💊 Compléments</div>
+        <div class="mockup-nav-item">🧪 Suppléments</div>
+      </div>
+      <!-- Contenu -->
+      <div class="mockup-content">
+        <div class="mockup-header">
+          <div class="mockup-date">Aujourd'hui</div>
+          <div class="mockup-add-btn">＋ Ajouter un aliment</div>
+        </div>
+        <!-- Macros -->
+        <div class="mockup-macros">
+          <div class="mockup-macro-card">
+            <div class="mockup-macro-label">🔥 Calories</div>
+            <div class="mockup-macro-val" style="color:#ff6b81">1 847</div>
+            <div class="mockup-macro-sub">/ 2 200 kcal</div>
+          </div>
+          <div class="mockup-macro-card">
+            <div class="mockup-macro-label">💪 Protéines</div>
+            <div class="mockup-macro-val" style="color:#4ade80">142.3</div>
+            <div class="mockup-macro-sub">/ 165 g</div>
+          </div>
+          <div class="mockup-macro-card">
+            <div class="mockup-macro-label">🌾 Glucides</div>
+            <div class="mockup-macro-val" style="color:#fbbf24">198.0</div>
+            <div class="mockup-macro-sub">/ 220 g</div>
+          </div>
+          <div class="mockup-macro-card">
+            <div class="mockup-macro-label">🫒 Lipides</div>
+            <div class="mockup-macro-val" style="color:#a78bfa">58.5</div>
+            <div class="mockup-macro-sub">/ 70 g</div>
+          </div>
+          <div class="mockup-macro-card">
+            <div class="mockup-macro-label">🌿 Fibres</div>
+            <div class="mockup-macro-val" style="color:#34d399">22.1</div>
+            <div class="mockup-macro-sub">/ 25 g</div>
+          </div>
+        </div>
+        <!-- Barres progression -->
+        <div class="mockup-prog">
+          <div class="mockup-prog-row">
+            <span class="mockup-prog-label">🔥 Calories</span>
+            <div class="mockup-prog-bar"><div class="mockup-prog-fill" style="width:84%;background:#ff6b81"></div></div>
+            <span class="mockup-prog-pct">84%</span>
+          </div>
+          <div class="mockup-prog-row">
+            <span class="mockup-prog-label">💪 Protéines</span>
+            <div class="mockup-prog-bar"><div class="mockup-prog-fill" style="width:86%;background:#4ade80"></div></div>
+            <span class="mockup-prog-pct">86%</span>
+          </div>
+          <div class="mockup-prog-row">
+            <span class="mockup-prog-label">🌾 Glucides</span>
+            <div class="mockup-prog-bar"><div class="mockup-prog-fill" style="width:90%;background:#fbbf24"></div></div>
+            <span class="mockup-prog-pct">90%</span>
+          </div>
+        </div>
+        <!-- Table -->
+        <div class="mockup-table">
+          <div class="mockup-table-header">
+            <span>Repas</span><span>Aliment</span><span>Qté</span>
+            <span>Kcal</span><span>Prot.</span><span>Gluc.</span>
+          </div>
+          <div class="mockup-table-row">
+            <span><span class="tag tag-dej">Déjeuner</span></span>
+            <span>Blanc de poulet</span><span>200g</span>
+            <span style="color:#ff6b81">240</span><span style="color:#4ade80">46g</span><span>0g</span>
+          </div>
+          <div class="mockup-table-row">
+            <span><span class="tag tag-dej">Déjeuner</span></span>
+            <span>Riz basmati cuit</span><span>180g</span>
+            <span style="color:#ff6b81">218</span><span style="color:#4ade80">4.5g</span><span style="color:#fbbf24">45g</span>
+          </div>
+          <div class="mockup-table-row">
+            <span><span class="tag tag-din">Dîner</span></span>
+            <span>Saumon frais</span><span>150g</span>
+            <span style="color:#ff6b81">312</span><span style="color:#4ade80">30g</span><span>0g</span>
+          </div>
+          <div class="mockup-table-row">
+            <span><span class="tag tag-col">Collation</span></span>
+            <span>Skyr nature</span><span>200g</span>
+            <span style="color:#ff6b81">126</span><span style="color:#4ade80">22g</span><span>8g</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<hr class="div">
-
-<!-- FEATURES -->
-<section class="s" id="fonctionnalites">
-  <p class="s-label">Fonctionnalites</p>
-  <h2>Tout ce dont vous avez besoin</h2>
-  <p class="s-sub">Une application complete pensee pour les sportifs et les personnes soucieuses de leur alimentation, sans compromis sur la vie privee.</p>
-
-  <div class="feat-grid">
-
-    <!-- Journal -->
-    <div class="feat feat-wide">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      </div>
-      <div class="feat-title">Journal alimentaire quotidien</div>
-      <div class="feat-desc">Enregistrez chaque repas classe par categorie : petit-dejeuner, dejeuner, diner, collation. Navigation par date avec fleches ou bouton "Aujourd'hui". Chaque entree affiche instantanement calories, proteines, glucides, lipides et fibres. Actions rapides : modifier la quantite, dupliquer une entree, supprimer. Le total de la journee est recalcule en temps reel. Analyse nutritionnelle complete de la journee sur simple clic, avec conseils personnalises selon vos objectifs.</div>
-      <span class="feat-tag">journal par repas</span>
-      <span class="feat-tag">analyse instantanee</span>
-    </div>
-
-    <!-- Objectifs -->
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-      </div>
-      <div class="feat-title">Objectifs intelligents</div>
-      <div class="feat-desc">Calcul automatique de vos objectifs journaliers via la formule Mifflin-St Jeor. Renseignez age, poids, taille, niveau d'activite et objectif (seche, maintien, prise de masse) : calories, proteines, glucides, lipides, fibres, sel et sucres sont calcules en consequence. Les objectifs sont aussi modifiables manuellement a tout moment. Barres de progression en temps reel et repartition calorique par macronutriment.</div>
-      <span class="feat-tag">formule Mifflin-St Jeor</span>
-    </div>
-
-    <!-- Graphiques -->
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </div>
-      <div class="feat-title">Graphiques de progression</div>
-      <div class="feat-desc">Courbes lisses pour calories, proteines, glucides, lipides et fibres sur 7, 14 ou 30 jours. Ligne d'objectif en pointilles, valeur maximale et moyenne affiches. Graphique en barres comparatif pour voir rapidement les jours ou vous avez atteint vos objectifs. Onglet resume avec min, max, total et pourcentage de l'objectif. Streak et taux de consistance calcules automatiquement.</div>
-      <span class="feat-tag">7 / 14 / 30 jours</span>
-    </div>
-
-    <!-- Sante -->
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      </div>
-      <div class="feat-title">Sante et composition corporelle</div>
-      <div class="feat-desc">Saisie quotidienne : poids, tours de taille / cou / hanches / bras / cuisse, hydratation, sommeil, forme subjective, stress, seance du jour et frequence cardiaque. Calculs automatiques : IMC avec categorie, masse grasse via methode US Navy, masse maigre, VO2max estime (formule Uth-Sorensen), poids ideal (Devine) et besoin en eau. Graphique d'evolution du poids avec tendance lineaire.</div>
-      <span class="feat-tag">US Navy / Devine / Uth</span>
-    </div>
-
-    <!-- Base aliments -->
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </div>
-      <div class="feat-title">Base de donnees alimentaire</div>
-      <div class="feat-desc">Plus de 70 aliments pre-renseignes couvrant viandes, poissons, oeufs, feculents, legumes, fruits, laitiers, oleagineux, legumineuses, complements et boissons. Recherche approximative par nom avec algorithme difflib. Tri par colonne, filtre par categorie, gestion des favoris. Chaque aliment stocke 8 valeurs nutritionnelles pour 100g. Ajout, modification et suppression depuis l'interface.</div>
-      <span class="feat-tag">recherche floue</span>
-    </div>
-
-    <!-- Supplements -->
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      </div>
-      <div class="feat-title">Supplements et complements</div>
-      <div class="feat-desc">Catalogue de supplements (whey, creatine, omega 3, vitamines, mineraux...) avec dose habituelle et valeurs nutritionnelles par dose. Enregistrement des prises quotidiennes avec heure et notes. Ajout direct d'une prise au journal alimentaire. Suivi hebdomadaire des prises. Les complements (whey, creatine presentes en base) s'integrent naturellement au journal.</div>
-      <span class="feat-tag">prises quotidiennes</span>
-    </div>
-
-    <!-- Score sante -->
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      </div>
-      <div class="feat-title">Analyse et score sante</div>
-      <div class="feat-desc">Chaque aliment recoit un score sante de 0 a 100 calcule selon sa teneur en proteines, fibres, acides gras satures, sucres et sel. Alertes contextuelles : elevees en sodium, acides gras satures, sucres, ou au contraire riche en fibres et proteines. Suggestions d'alternatives adaptees a votre objectif (seche, maintien, prise de masse). Analyse complete de la journee avec conseils.</div>
-      <span class="feat-tag">score 0-100</span>
-    </div>
-
-    <!-- IA Groq -->
-    <div class="feat feat-wide">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      </div>
-      <div class="feat-title">Enrichissement IA via Groq (optionnel)</div>
-      <div class="feat-desc">Connexion a l'API Groq (gratuite, aucune carte bancaire requise) pour generer automatiquement de nouveaux aliments et supplements a chaque lancement. Le modele LLaMA 3.3 70B produit des valeurs nutritionnelles realistes et variees, orientees sport et sante. Detection automatique des doublons par comparaison approximative des noms (difflib). L'enrichissement tourne en arriere-plan sans bloquer l'interface. Configurez simplement votre cle dans config.json.</div>
-      <span class="feat-tag-green">gratuit — console.groq.com</span>
-      <span class="feat-tag">LLaMA 3.3 70B</span>
-    </div>
-
-    <!-- Local -->
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-      </div>
-      <div class="feat-title">100% local, zero cloud</div>
-      <div class="feat-desc">Toutes les donnees sont stockees en JSON sur votre machine. Aliments, journal, objectifs, sante, supplements : cinq fichiers lisibles et sauvegardables. Backup automatique avant chaque ecriture (.bak). Aucun compte, aucun abonnement, aucune connexion requise sauf si l'IA Groq est activee.</div>
-      <span class="feat-tag-green">zero telemetrie</span>
-    </div>
-
+<!-- ── FEATURES ────────────────────────────────────────────────────────────── -->
+<section class="features-section" id="features">
+  <div class="section-header">
+    <span class="section-label">Fonctionnalités</span>
+    <h2 class="section-title">Tout ce dont vous avez besoin</h2>
+    <p class="section-desc">9 modules complets, 0 abonnement, 0 cloud. Vos données restent chez vous.</p>
   </div>
-</section>
+  <div class="features-grid">
 
-<hr class="div">
-
-<!-- PRE-REQUIS -->
-<section class="s" id="prerequis">
-  <p class="s-label">Pre-requis</p>
-  <h2>Ce qu'il vous faut</h2>
-  <p class="s-sub">NutriTracker tourne sur Python standard. Un seul paquet est vraiment necessaire.</p>
-
-  <div class="warn-box">
-    <span class="warn-icon">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    </span>
-    <span class="warn-text">
-      <strong>Python 3.10 minimum requis.</strong> Si vous n'avez pas la bonne version ou si les imports echouent au lancement, executez <code>install_nutri.bat</code> en administrateur. Ce script verifie votre version Python, met a jour pip et installe tous les modules automatiquement.
-    </span>
-  </div>
-
-  <div class="req-grid">
-    <div class="req-card">
-      <div class="req-card-title">Requis</div>
-      <div class="req-item"><span class="req-dot"></span><span>Python <strong>3.10+</strong><span class="req-sub">tkinter inclus par defaut</span></span></div>
-      <div class="req-item"><span class="req-dot"></span><span>ttkbootstrap<span class="req-sub">theme visuel moderne</span></span></div>
-      <div class="req-item"><span class="req-dot"></span><span>json, os, shutil, uuid, difflib<span class="req-sub">bibliotheques standard Python</span></span></div>
-    </div>
-    <div class="req-card">
-      <div class="req-card-title">Optionnel</div>
-      <div class="req-item"><span class="req-dot req-dot-warn"></span><span>requests<span class="req-sub">recherche web nutritionnelle</span></span></div>
-      <div class="req-item"><span class="req-dot req-dot-warn"></span><span>beautifulsoup4<span class="req-sub">scraping etiquettes</span></span></div>
-      <div class="req-item"><span class="req-dot req-dot-warn"></span><span>Pillow + pytesseract + opencv<span class="req-sub">OCR et traitement images</span></span></div>
-    </div>
-    <div class="req-card">
-      <div class="req-card-title">Systeme</div>
-      <div class="req-item"><span class="req-dot"></span><span>Windows 10 / 11<span class="req-sub">fichier .bat fourni</span></span></div>
-      <div class="req-item"><span class="req-dot"></span><span>macOS 12+<span class="req-sub">python main.py</span></span></div>
-      <div class="req-item"><span class="req-dot"></span><span>Linux (Debian, Arch...)<span class="req-sub">tkinter via gestionnaire de paquets</span></span></div>
-    </div>
-  </div>
-
-  <div class="code-block">
-    <div class="code-bar">
-      <span class="code-lang">bash &mdash; verifier Python</span>
-      <button class="copy-btn" onclick="copyCode(this,'req1')">copier</button>
-    </div>
-    <pre><code id="req1"><span class="k">python</span> --version
-<span class="c"># Python 3.10.x ou superieur</span>
-
-<span class="c"># Si la version est inferieure ou si des modules manquent :</span>
-<span class="c"># lancez install_nutri.bat en administrateur</span></code></pre>
-  </div>
-</section>
-
-<hr class="div">
-
-<!-- STRUCTURE -->
-<section class="s" id="structure">
-  <p class="s-label">Structure</p>
-  <h2>Organisation du projet</h2>
-  <p class="s-sub">Le projet est volontairement simple : Python pur, pas de framework, donnees en JSON.</p>
-
-  <div class="tree-block">
-    <div class="tree-line"><span style="color:var(--muted)">NutriTracker/</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name">main.py</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;point d'entree, verification dependances</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name">lancer_nutri.bat</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;raccourci Windows</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name">install_nutri.bat</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;installation automatique des dependances</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name">config.json</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cle API Groq (optionnel)</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name dir">data/</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">│&nbsp;&nbsp; ├──</span> <span class="tree-name">aliments.json</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;base alimentaire (70+ entrees)</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">│&nbsp;&nbsp; ├──</span> <span class="tree-name">journal.json</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entrees quotidiennes par date</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">│&nbsp;&nbsp; ├──</span> <span class="tree-name">objectifs.json</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;profil utilisateur et objectifs</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">│&nbsp;&nbsp; ├──</span> <span class="tree-name">supplements.json</span> <span class="tree-cmt">&nbsp;&nbsp;catalogue et prises quotidiennes</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">│&nbsp;&nbsp; └──</span> <span class="tree-name">sante.json</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mesures corporelles historisees</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name dir">models/</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dataclasses : Aliment, EntreeJournal, Profil</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name dir">database/</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lecture / ecriture JSON</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name dir">ui/</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fenetre principale, graphiques, sante</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name dir">nutrition/</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;analyse, scores, suggestions</span></div>
-    <div class="tree-line"><span style="color:var(--muted)">└──</span> <span class="tree-name dir">utils/</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;enrichissement IA (Groq)</span></div>
-  </div>
-</section>
-
-<hr class="div">
-
-<!-- INSTALLATION -->
-<section class="s" id="installation">
-  <p class="s-label">Installation</p>
-  <h2>Lancer NutriTracker</h2>
-  <p class="s-sub">Cinq minutes, pas de compilation, pas de base de donnees a configurer.</p>
-
-  <div class="steps">
-
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-content">
-        <div class="step-title">Cloner le depot</div>
-        <div class="step-desc">Telechargez les sources via Git ou depuis la page releases GitHub.</div>
-        <div class="code-block">
-          <div class="code-bar"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this,'c1')">copier</button></div>
-          <pre><code id="c1"><span class="k">git clone</span> https://github.com/Vindows/NutriTracker.git
-<span class="k">cd</span> NutriTracker</code></pre>
-        </div>
+    <div class="feature-card" style="--accent-card:#ff6b81;--border-hover:rgba(255,107,129,.4)">
+      <div class="feature-icon">📅</div>
+      <div class="feature-title">Journal quotidien</div>
+      <div class="feature-desc">Ajoutez, modifiez et supprimez vos repas par catégorie (Petit-déjeuner, Déjeuner, Dîner, Collation) avec calcul automatique des macros.</div>
+      <div class="feature-tags">
+        <span class="feature-tag">Navigation par date</span>
+        <span class="feature-tag">Dupliquer</span>
+        <span class="feature-tag">Totaux live</span>
       </div>
     </div>
 
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-content">
-        <div class="step-title">Installer les dependances <span style="color:var(--muted);font-weight:300">&mdash; Windows</span></div>
-        <div class="step-desc">Double-cliquez sur <code style="font-size:12px;background:var(--surface3);border:1px solid var(--border2);padding:2px 8px;border-radius:4px;color:var(--text)">install_nutri.bat</code> en administrateur. Le script verifie Python 3.10+, met a jour pip et installe tous les modules requis et optionnels automatiquement.</div>
-        <div class="code-block">
-          <div class="code-bar"><span class="code-lang">batch</span><button class="copy-btn" onclick="copyCode(this,'c2')">copier</button></div>
-          <pre><code id="c2"><span class="c"># ou depuis le terminal :</span>
-install_nutri.bat</code></pre>
-        </div>
-        <p class="step-note">Si Python est inferieur a 3.10, le script vous redirige vers python.org automatiquement.</p>
+    <div class="feature-card" style="--accent-card:#4ade80;--border-hover:rgba(74,222,128,.4)">
+      <div class="feature-icon">📈</div>
+      <div class="feature-title">Graphiques de progression</div>
+      <div class="feature-desc">Courbes lissées en Canvas pur pour calories, protéines, glucides, lipides et fibres. Période 7 / 14 / 30 jours, streak et consistance.</div>
+      <div class="feature-tags">
+        <span class="feature-tag">Canvas pur</span>
+        <span class="feature-tag">0 dépendance</span>
+        <span class="feature-tag">Tendance linéaire</span>
       </div>
     </div>
 
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-content">
-        <div class="step-title">Installer les dependances <span style="color:var(--muted);font-weight:300">&mdash; macOS / Linux</span></div>
-        <div class="code-block">
-          <div class="code-bar"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this,'c3')">copier</button></div>
-          <pre><code id="c3"><span class="k">python</span> -m venv .venv
-<span class="k">source</span> .venv/bin/activate
-
-<span class="k">pip install</span> ttkbootstrap requests beautifulsoup4 Pillow</code></pre>
-        </div>
-        <p class="step-note">Sur Ubuntu/Debian, installez tkinter via : sudo apt install python3-tk</p>
+    <div class="feature-card" style="--accent-card:#38bdf8;--border-hover:rgba(56,189,248,.4)">
+      <div class="feature-icon">🏥</div>
+      <div class="feature-title">Santé & Composition</div>
+      <div class="feature-desc">IMC, masse grasse (formule US Navy), VO2max estimé, poids idéal (Devine), suivi sommeil, hydratation, fréquence cardiaque, tension.</div>
+      <div class="feature-tags">
+        <span class="feature-tag">US Navy</span>
+        <span class="feature-tag">6 mensurations</span>
+        <span class="feature-tag">Tendance poids</span>
       </div>
     </div>
 
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-content">
-        <div class="step-title">Lancer l'application</div>
-        <div class="code-block">
-          <div class="code-bar"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this,'c4')">copier</button></div>
-          <pre><code id="c4"><span class="k">python</span> main.py
-
-<span class="c"># Windows : double-clic sur lancer_nutri.bat</span></code></pre>
-        </div>
+    <div class="feature-card" style="--accent-card:#a78bfa;--border-hover:rgba(167,139,250,.4)">
+      <div class="feature-icon">🎯</div>
+      <div class="feature-title">Objectifs fitness</div>
+      <div class="feature-desc">Calcul automatique des besoins caloriques selon votre profil (TDEE Mifflin-St Jeor). Modes Sèche, Maintien et Prise de masse.</div>
+      <div class="feature-tags">
+        <span class="feature-tag">Sèche</span>
+        <span class="feature-tag">Maintien</span>
+        <span class="feature-tag">Prise de masse</span>
       </div>
     </div>
 
-    <div class="step">
-      <div class="step-num">5</div>
-      <div class="step-content">
-        <div class="step-title">Enrichissement IA Groq <span style="color:var(--muted);font-weight:300">&mdash; optionnel, gratuit</span></div>
-        <div class="step-desc">Creez un compte gratuit sur <a href="https://console.groq.com" target="_blank">console.groq.com</a>, generez une cle API et renseignez-la dans config.json. L'application enrichira automatiquement la base d'aliments a chaque lancement via LLaMA 3.</div>
-        <div class="code-block">
-          <div class="code-bar"><span class="code-lang">json &mdash; config.json</span><button class="copy-btn" onclick="copyCode(this,'c5')">copier</button></div>
-          <pre><code id="c5">{
-  <span class="k">"groq_api_key"</span>: <span class="s">"votre_cle_api_ici"</span>
-}</code></pre>
-        </div>
+    <div class="feature-card" style="--accent-card:#fbbf24;--border-hover:rgba(251,191,36,.4)">
+      <div class="feature-icon">🧠</div>
+      <div class="feature-title">Analyse nutritionnelle IA</div>
+      <div class="feature-desc">Détection des excès de sucres, graisses saturées et sel. Score santé sur 100. Suggestions d'alternatives plus saines selon l'objectif.</div>
+      <div class="feature-tags">
+        <span class="feature-tag">Score /100</span>
+        <span class="feature-tag">Alertes</span>
+        <span class="feature-tag">Alternatives</span>
+      </div>
+    </div>
+
+    <div class="feature-card" style="--accent-card:#00c896;--border-hover:rgba(0,200,150,.4)">
+      <div class="feature-icon">🤖</div>
+      <div class="feature-title">Enrichissement IA (Groq)</div>
+      <div class="feature-desc">Au démarrage, Llama 3.3 70B génère automatiquement 8 nouveaux aliments et 3 suppléments et les ajoute à la base locale. 100% gratuit.</div>
+      <div class="feature-tags">
+        <span class="feature-tag">Groq API</span>
+        <span class="feature-tag">Llama 3.3</span>
+        <span class="feature-tag">Anti-doublon</span>
+      </div>
+    </div>
+
+    <div class="feature-card" style="--accent-card:#f472b6;--border-hover:rgba(244,114,182,.4)">
+      <div class="feature-icon">🔍</div>
+      <div class="feature-title">Recherche intelligente</div>
+      <div class="feature-desc">Auto-complétion et recherche approximative via difflib. 77+ aliments pré-chargés couvrant viandes, poissons, légumes, féculents, laitiers.</div>
+      <div class="feature-tags">
+        <span class="feature-tag">difflib</span>
+        <span class="feature-tag">Favoris</span>
+        <span class="feature-tag">77+ aliments</span>
+      </div>
+    </div>
+
+    <div class="feature-card" style="--accent-card:#fb923c;--border-hover:rgba(251,146,60,.4)">
+      <div class="feature-icon">🧪</div>
+      <div class="feature-title">Suppléments & Compléments</div>
+      <div class="feature-desc">Gérez votre stack de suppléments (whey, créatine, vitamines…). Enregistrez chaque prise avec dose, heure, calcul auto des macros.</div>
+      <div class="feature-tags">
+        <span class="feature-tag">Catalogue</span>
+        <span class="feature-tag">Prises du jour</span>
+        <span class="feature-tag">Suivi hebdo</span>
+      </div>
+    </div>
+
+    <div class="feature-card" style="--accent-card:#7c6aff;--border-hover:rgba(124,106,255,.4)">
+      <div class="feature-icon">💾</div>
+      <div class="feature-title">Données 100% locales</div>
+      <div class="feature-desc">Tout est stocké en JSON sur votre machine. Aucun cloud, aucune inscription, aucune dépendance externe. Import/export JSON.</div>
+      <div class="feature-tags">
+        <span class="feature-tag">JSON local</span>
+        <span class="feature-tag">Backup auto</span>
+        <span class="feature-tag">Hors ligne</span>
       </div>
     </div>
 
   </div>
 </section>
 
+<!-- ── INSTALL ─────────────────────────────────────────────────────────────── -->
+<section class="install-section" id="install">
+  <div class="install-inner">
+    <div class="section-header">
+      <span class="section-label">Installation</span>
+      <h2 class="section-title">Prêt en 3 minutes</h2>
+      <p class="section-desc">Fonctionne sur Windows avec Python 3.10+.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Cloner le dépôt</div>
+          <div class="step-desc">Télécharge le projet depuis GitHub dans <code>C:\NutriTracker\</code></div>
+          <div class="step-cmd">git clone https://github.com/Victorlegeek/Nutri-Tracker C:\NutriTracker</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Lancer le script d'installation</div>
+          <div class="step-desc">Exécute <strong>install_nutri.bat</strong> en tant qu'administrateur — il installe toutes les dépendances automatiquement.</div>
+          <div class="step-cmd">install_nutri.bat (clic droit → Exécuter en administrateur)</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Configurer la clé IA (optionnel)</div>
+          <div class="step-desc">Pour l'enrichissement automatique, ajoute ta <a href="https://console.groq.com" target="_blank" class="link-dotted">clé Groq API</a> dans <code>config.json</code></div>
+          <div class="step-cmd">echo {"groq_api_key": "gsk_..."} > config.json</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Lancer l'application</div>
+          <div class="step-desc">Double-clique sur <strong>lancer_nutri.bat</strong> ou lance via Python</div>
+          <div class="step-cmd">python main.py</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STRUCTURE ───────────────────────────────────────────────────────────── -->
+<section class="structure-section" id="structure">
+  <div style="padding-top:100px">
+    <div class="section-header">
+      <span class="section-label">Architecture</span>
+      <h2 class="section-title">Structure du projet</h2>
+      <p class="section-desc">Code modulaire, commenté, facile à étendre.</p>
+    </div>
+    <div class="structure-grid">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+          📁 NutriTracker/
+        </div>
+        <pre>
+<span class="hl-green">C:\NutriTracker\</span>
+│
+<span class="hl-blue">├── main.py</span>               <span class="hl-dim"># Point d'entrée</span>
+<span class="hl-blue">├── config.json</span>           <span class="hl-dim"># Clé API Groq</span>
+<span class="hl-blue">├── install_nutri.bat</span>     <span class="hl-dim"># Script install Windows</span>
+│
+<span class="hl-purple">├── ui/</span>
+<span class="hl-dim">│   ├── main_window.py</span>    <span class="hl-dim"># Interface principale</span>
+<span class="hl-dim">│   ├── graphiques.py</span>     <span class="hl-dim"># Courbes & barres</span>
+<span class="hl-dim">│   └── sante.py</span>          <span class="hl-dim"># Santé & composition</span>
+│
+<span class="hl-orange">├── database/</span>
+<span class="hl-dim">│   └── db_manager.py</span>     <span class="hl-dim"># CRUD JSON</span>
+│
+<span class="hl-pink">├── models/</span>
+<span class="hl-dim">│   └── aliment.py</span>        <span class="hl-dim"># Dataclasses</span>
+│
+<span class="hl-blue">├── nutrition/</span>
+<span class="hl-dim">│   └── analyse.py</span>        <span class="hl-dim"># Score santé & conseils</span>
+│
+<span class="hl-green">├── utils/</span>
+<span class="hl-dim">│   └── ia_enrichissement.py</span>
+│
+<span class="hl-orange">└── data/</span>                  <span class="hl-dim"># Données locales</span>
+    <span class="hl-dim">├── aliments.json</span>     <span class="hl-dim"># 77+ aliments</span>
+    <span class="hl-dim">├── journal.json</span>
+    <span class="hl-dim">├── supplements.json</span>
+    <span class="hl-dim">├── objectifs.json</span>
+    <span class="hl-dim">└── sante.json</span>
+        </pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+          🐍 main.py — extrait
+        </div>
+        <pre>
+<span class="hl-purple">from</span> ui.main_window <span class="hl-purple">import</span> NutriApp
+<span class="hl-purple">from</span> utils.ia_enrichissement <span class="hl-purple">import</span> (
+    enrichir_en_arriere_plan
+)
+
+<span class="hl-blue">def</span> <span class="hl-green">main</span>():
+    <span class="hl-dim"># Vérification dépendances</span>
+    verifier_dependances()
+
+    <span class="hl-dim"># Init données JSON</span>
+    _initialiser_donnees()
+
+    <span class="hl-dim"># Enrichissement IA en arrière-plan</span>
+    enrichir_en_arriere_plan()
+
+    <span class="hl-dim"># Lancer l'UI</span>
+    app = <span class="hl-green">NutriApp</span>()
+    app.mainloop()
+
+
+<span class="hl-dim"># Modèle de données</span>
+<span class="hl-purple">@dataclass</span>
+<span class="hl-blue">class</span> <span class="hl-orange">ValeursNutritionnelles</span>:
+    calories:          <span class="hl-pink">float</span> = <span class="hl-green">0.0</span>
+    proteines:         <span class="hl-pink">float</span> = <span class="hl-green">0.0</span>
+    glucides:          <span class="hl-pink">float</span> = <span class="hl-green">0.0</span>
+    lipides:           <span class="hl-pink">float</span> = <span class="hl-green">0.0</span>
+    fibres:            <span class="hl-pink">float</span> = <span class="hl-green">0.0</span>
+    sel:               <span class="hl-pink">float</span> = <span class="hl-green">0.0</span>
+    sucres:            <span class="hl-pink">float</span> = <span class="hl-green">0.0</span>
+    acides_gras_satures:<span class="hl-pink">float</span> = <span class="hl-green">0.0</span>
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── IA ──────────────────────────────────────────────────────────────────── -->
+<section class="ia-section" id="ia">
+  <div class="section-header">
+    <span class="section-label">Intelligence Artificielle</span>
+    <h2 class="section-title">IA gratuite intégrée</h2>
+    <p class="section-desc">Deux systèmes IA distincts — analyse locale et enrichissement via Groq.</p>
+  </div>
+  <div class="ia-grid">
+    <div class="ia-card">
+      <span class="ia-card-badge badge-free">✓ Zéro API — Local</span>
+      <h3>🧠 Analyse nutritionnelle</h3>
+      <p>Système de règles expert embarqué qui analyse chaque aliment et la journée entière sans connexion internet.</p>
+      <ul class="ia-features">
+        <li>Détection excès sucres / graisses saturées / sel</li>
+        <li>Score santé de 0 à 100 par aliment</li>
+        <li>Suggestions d'alternatives (Nutella → beurre de cacahuète)</li>
+        <li>Conseils personnalisés selon sèche / maintien / masse</li>
+        <li>Analyse globale de la journée alimentaire</li>
+      </ul>
+    </div>
+    <div class="ia-card highlight">
+      <span class="ia-card-badge badge-groq">★ Groq — Llama 3.3 70B</span>
+      <h3>🤖 Enrichissement automatique</h3>
+      <p>À chaque démarrage, l'IA génère de nouveaux aliments et suppléments et les ajoute à votre base locale.</p>
+      <ul class="ia-features">
+        <li>8 nouveaux aliments générés par session</li>
+        <li>3 nouveaux suppléments sportifs</li>
+        <li>Détection et suppression des doublons</li>
+        <li>Valeurs nutritionnelles précises pour 100g</li>
+        <li>Thread arrière-plan — ne bloque pas l'UI</li>
+        <li>Gratuit — inscription sur <a href="https://console.groq.com" target="_blank" class="link-dotted">console.groq.com</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── TECH STACK ──────────────────────────────────────────────────────────── -->
+<section class="tech-section">
+  <div class="tech-inner">
+    <div class="tech-card"><div class="tech-icon">🐍</div><div class="tech-name">Python 3.10+</div><div class="tech-role">Runtime</div></div>
+    <div class="tech-card"><div class="tech-icon">🖼</div><div class="tech-name">Tkinter / ttk</div><div class="tech-role">Interface graphique</div></div>
+    <div class="tech-card"><div class="tech-icon">📊</div><div class="tech-name">Canvas</div><div class="tech-role">Graphiques custom</div></div>
+    <div class="tech-card"><div class="tech-icon">💾</div><div class="tech-name">JSON local</div><div class="tech-role">Base de données</div></div>
+    <div class="tech-card"><div class="tech-icon">🤖</div><div class="tech-name">Groq API</div><div class="tech-role">IA gratuite</div></div>
+    <div class="tech-card"><div class="tech-icon">🦙</div><div class="tech-name">Llama 3.3 70B</div><div class="tech-role">Modèle LLM</div></div>
+    <div class="tech-card"><div class="tech-icon">🔍</div><div class="tech-name">difflib</div><div class="tech-role">Recherche fuzzy</div></div>
+    <div class="tech-card"><div class="tech-icon">📐</div><div class="tech-name">dataclasses</div><div class="tech-role">Modèles de données</div></div>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────────────── -->
 <footer>
-  <div class="footer-inner">
-    <span class="footer-copy">NutriTracker &mdash; Licence MIT &mdash; 2026 Vindows</span>
-    <div class="footer-links">
-      <a href="https://github.com/Vindows/NutriTracker">GitHub</a>
-      <a href="https://github.com/Vindows/NutriTracker/issues">Signaler un bug</a>
-      <a href="https://github.com/Vindows/NutriTracker/blob/main/LICENSE">Licence</a>
-    </div>
+  <div class="footer-logo">🥗 <span>Nutri</span>Tracker</div>
+  <div class="footer-links">
+    <a href="https://github.com/Victorlegeek/Nutri-Tracker" target="_blank">GitHub</a>
+    <a href="https://github.com/Victorlegeek/Nutri-Tracker/releases">Releases</a>
+    <a href="https://console.groq.com" target="_blank">Groq API</a>
+    <a href="https://github.com/Victorlegeek/Nutri-Tracker/issues">Issues</a>
   </div>
+  <div class="footer-copy">MIT License · Open Source · Fait avec Python 🐍</div>
 </footer>
 
 <script>
-function copyCode(btn,id){
-  const el=document.getElementById(id);
-  if(!el)return;
-  const txt=el.innerText;
-  navigator.clipboard.writeText(txt).then(()=>{
-    btn.textContent='copie !';
-    btn.classList.add('copied');
-    setTimeout(()=>{btn.textContent='copier';btn.classList.remove('copied')},2000);
+  // Animation des barres de progression au chargement
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.mockup-prog-fill').forEach(bar => {
+      const w = bar.style.width;
+      bar.style.width = '0%';
+      setTimeout(() => { bar.style.width = w; }, 400);
+    });
   });
-}
+
+  // Highlight nav item actif au scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current
+        ? 'var(--text)' : '';
+    });
+  });
+
+  // Sidebar mockup — click pour changer d'onglet actif
+  document.querySelectorAll('.mockup-nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.mockup-nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
 </script>
+
 </body>
 </html>
