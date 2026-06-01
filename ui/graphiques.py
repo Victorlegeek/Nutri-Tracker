@@ -345,7 +345,7 @@ class PageGraphiques(tk.Frame):
                  fg=C['text_muted'], font=FONT_LABEL).pack(side='left')
 
         self.var_periode = tk.IntVar(value=7)
-        for label, val in [("7 jours", 7), ("14 jours", 14), ("30 jours", 30)]:
+        for label, val in [("7 jours", 7), ("14 jours", 14), ("30 jours", 30), ("90 jours", 90), ("1 an", 365)]:
             tk.Radiobutton(ctrl, text=label, variable=self.var_periode,
                            value=val, bg=C['bg'], fg=C['text_muted'],
                            selectcolor=C['surface2'],

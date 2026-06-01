@@ -308,6 +308,19 @@ class NutriApp(tk.Tk):
         self._configurer_styles()
         self._construire_interface()
         self._charger_journal()
+        self._bind_raccourcis()
+
+    # ── RACCOURCIS CLAVIER ────────────────────────────────────────────────────
+    def _bind_raccourcis(self):
+        self.bind('<Left>',      lambda e: self._jour_precedent())
+        self.bind('<Right>',     lambda e: self._jour_suivant())
+        self.bind('<Control-n>', lambda e: self._ouvrir_dialog_ajout())
+        self.bind('<Control-t>', lambda e: self._aller_aujourdhui())
+        self.bind('<Control-a>', lambda e: self._afficher_page('aliments'))
+        self.bind('<Control-j>', lambda e: self._afficher_page('journal'))
+        self.bind('<Control-g>', lambda e: self._afficher_page('graphiques'))
+        self.bind('<F5>',        lambda e: self._charger_journal())
+
 
     # ── STYLES TTK ────────────────────────────────────────────────────────────
     def _configurer_styles(self):
@@ -432,11 +445,7 @@ class NutriApp(tk.Tk):
         def _draw_sep(e=None):
             sep_cv.delete('all')
             w = sep_cv.winfo_width() or SB_W
-            # Ligne dégradée
-            for i in range(int(w)):
-                alpha = int(255 * (1 - abs(i/(w/2) - 1)))
-                col = f'#{alpha:02x}{alpha:02x}{alpha+30:02x}' if alpha > 30 else SB_BG
-                sep_cv.create_line(i, 0, i, 1, fill=col)
+            sep_cv.create_line(0, 0, w, 0, fill=C['border'])
         sep_cv.bind('<Configure>', _draw_sep)
 
         # ── Navigation items ──────────────────────────────────────────────────
@@ -1052,7 +1061,6 @@ class NutriApp(tk.Tk):
                  font=('Segoe UI', 14)).pack(side='left')
 
         self.var_recherche = tk.StringVar()
-        self.var_recherche.trace('w', self._filtrer_aliments)
 
         entry_search = tk.Entry(search_frame, textvariable=self.var_recherche,
                                 bg=C['surface2'], fg=C['text'],
@@ -1065,6 +1073,7 @@ class NutriApp(tk.Tk):
 
         # Filtre catégorie
         self.var_categorie = tk.StringVar(value='Toutes')
+        self.var_recherche.trace('w', self._filtrer_aliments)
         categories = ['Toutes', 'viandes', 'poissons', 'oeufs', 'feculents',
                       'legumes', 'fruits', 'laitiers', 'oleagineux',
                       'legumineuses', 'complements', 'boissons', 'autre']
