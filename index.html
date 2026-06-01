@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriTracker — Suivi nutritionnel local</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <span class="logo"><span class="logo-dot"></span>NutriTracker</span>
+    <ul class="nav-links">
+      <li><a href="#fonctionnalites">Fonctionnalites</a></li>
+      <li><a href="#prerequis">Pre-requis</a></li>
+      <li><a href="#structure">Structure</a></li>
+      <li><a href="#installation">Installation</a></li>
+    </ul>
+    <a href="https://github.com/Vindows/NutriTracker/releases" class="nav-cta">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Telecharger
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge"><span>MIT</span> open source &mdash; Windows / macOS / Linux</div>
+  <h1>Suivi nutritionnel<br><em>local, precis, gratuit.</em></h1>
+  <p class="hero-desc">Application de bureau Python pour tracker vos apports, vos macros, votre sante et vos supplements. Tout reste sur votre machine, en JSON, sans compte ni abonnement.</p>
+  <div class="hero-actions">
+    <a href="https://github.com/Vindows/NutriTracker/releases" class="btn-primary">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Telecharger la derniere version
+    </a>
+    <a href="https://github.com/Vindows/NutriTracker" class="btn-ghost">
+      <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      Voir sur GitHub
+    </a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="stat-val">70+</div>
+      <div class="stat-lbl">aliments inclus</div>
+    </div>
+    <div class="hero-stat">
+      <div class="stat-val">8</div>
+      <div class="stat-lbl">macronutriments suivis</div>
+    </div>
+    <div class="hero-stat">
+      <div class="stat-val">0</div>
+      <div class="stat-lbl">donnee envoyee en ligne</div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- FEATURES -->
+<section class="s" id="fonctionnalites">
+  <p class="s-label">Fonctionnalites</p>
+  <h2>Tout ce dont vous avez besoin</h2>
+  <p class="s-sub">Une application complete pensee pour les sportifs et les personnes soucieuses de leur alimentation, sans compromis sur la vie privee.</p>
+
+  <div class="feat-grid">
+
+    <!-- Journal -->
+    <div class="feat feat-wide">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div class="feat-title">Journal alimentaire quotidien</div>
+      <div class="feat-desc">Enregistrez chaque repas classe par categorie : petit-dejeuner, dejeuner, diner, collation. Navigation par date avec fleches ou bouton "Aujourd'hui". Chaque entree affiche instantanement calories, proteines, glucides, lipides et fibres. Actions rapides : modifier la quantite, dupliquer une entree, supprimer. Le total de la journee est recalcule en temps reel. Analyse nutritionnelle complete de la journee sur simple clic, avec conseils personnalises selon vos objectifs.</div>
+      <span class="feat-tag">journal par repas</span>
+      <span class="feat-tag">analyse instantanee</span>
+    </div>
+
+    <!-- Objectifs -->
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      </div>
+      <div class="feat-title">Objectifs intelligents</div>
+      <div class="feat-desc">Calcul automatique de vos objectifs journaliers via la formule Mifflin-St Jeor. Renseignez age, poids, taille, niveau d'activite et objectif (seche, maintien, prise de masse) : calories, proteines, glucides, lipides, fibres, sel et sucres sont calcules en consequence. Les objectifs sont aussi modifiables manuellement a tout moment. Barres de progression en temps reel et repartition calorique par macronutriment.</div>
+      <span class="feat-tag">formule Mifflin-St Jeor</span>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div class="feat-title">Graphiques de progression</div>
+      <div class="feat-desc">Courbes lisses pour calories, proteines, glucides, lipides et fibres sur 7, 14 ou 30 jours. Ligne d'objectif en pointilles, valeur maximale et moyenne affiches. Graphique en barres comparatif pour voir rapidement les jours ou vous avez atteint vos objectifs. Onglet resume avec min, max, total et pourcentage de l'objectif. Streak et taux de consistance calcules automatiquement.</div>
+      <span class="feat-tag">7 / 14 / 30 jours</span>
+    </div>
+
+    <!-- Sante -->
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+      <div class="feat-title">Sante et composition corporelle</div>
+      <div class="feat-desc">Saisie quotidienne : poids, tours de taille / cou / hanches / bras / cuisse, hydratation, sommeil, forme subjective, stress, seance du jour et frequence cardiaque. Calculs automatiques : IMC avec categorie, masse grasse via methode US Navy, masse maigre, VO2max estime (formule Uth-Sorensen), poids ideal (Devine) et besoin en eau. Graphique d'evolution du poids avec tendance lineaire.</div>
+      <span class="feat-tag">US Navy / Devine / Uth</span>
+    </div>
+
+    <!-- Base aliments -->
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <div class="feat-title">Base de donnees alimentaire</div>
+      <div class="feat-desc">Plus de 70 aliments pre-renseignes couvrant viandes, poissons, oeufs, feculents, legumes, fruits, laitiers, oleagineux, legumineuses, complements et boissons. Recherche approximative par nom avec algorithme difflib. Tri par colonne, filtre par categorie, gestion des favoris. Chaque aliment stocke 8 valeurs nutritionnelles pour 100g. Ajout, modification et suppression depuis l'interface.</div>
+      <span class="feat-tag">recherche floue</span>
+    </div>
+
+    <!-- Supplements -->
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="feat-title">Supplements et complements</div>
+      <div class="feat-desc">Catalogue de supplements (whey, creatine, omega 3, vitamines, mineraux...) avec dose habituelle et valeurs nutritionnelles par dose. Enregistrement des prises quotidiennes avec heure et notes. Ajout direct d'une prise au journal alimentaire. Suivi hebdomadaire des prises. Les complements (whey, creatine presentes en base) s'integrent naturellement au journal.</div>
+      <span class="feat-tag">prises quotidiennes</span>
+    </div>
+
+    <!-- Score sante -->
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div class="feat-title">Analyse et score sante</div>
+      <div class="feat-desc">Chaque aliment recoit un score sante de 0 a 100 calcule selon sa teneur en proteines, fibres, acides gras satures, sucres et sel. Alertes contextuelles : elevees en sodium, acides gras satures, sucres, ou au contraire riche en fibres et proteines. Suggestions d'alternatives adaptees a votre objectif (seche, maintien, prise de masse). Analyse complete de la journee avec conseils.</div>
+      <span class="feat-tag">score 0-100</span>
+    </div>
+
+    <!-- IA Groq -->
+    <div class="feat feat-wide">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <div class="feat-title">Enrichissement IA via Groq (optionnel)</div>
+      <div class="feat-desc">Connexion a l'API Groq (gratuite, aucune carte bancaire requise) pour generer automatiquement de nouveaux aliments et supplements a chaque lancement. Le modele LLaMA 3.3 70B produit des valeurs nutritionnelles realistes et variees, orientees sport et sante. Detection automatique des doublons par comparaison approximative des noms (difflib). L'enrichissement tourne en arriere-plan sans bloquer l'interface. Configurez simplement votre cle dans config.json.</div>
+      <span class="feat-tag-green">gratuit — console.groq.com</span>
+      <span class="feat-tag">LLaMA 3.3 70B</span>
+    </div>
+
+    <!-- Local -->
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div class="feat-title">100% local, zero cloud</div>
+      <div class="feat-desc">Toutes les donnees sont stockees en JSON sur votre machine. Aliments, journal, objectifs, sante, supplements : cinq fichiers lisibles et sauvegardables. Backup automatique avant chaque ecriture (.bak). Aucun compte, aucun abonnement, aucune connexion requise sauf si l'IA Groq est activee.</div>
+      <span class="feat-tag-green">zero telemetrie</span>
+    </div>
+
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- PRE-REQUIS -->
+<section class="s" id="prerequis">
+  <p class="s-label">Pre-requis</p>
+  <h2>Ce qu'il vous faut</h2>
+  <p class="s-sub">NutriTracker tourne sur Python standard. Un seul paquet est vraiment necessaire.</p>
+
+  <div class="warn-box">
+    <span class="warn-icon">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </span>
+    <span class="warn-text">
+      <strong>Python 3.10 minimum requis.</strong> Si vous n'avez pas la bonne version ou si les imports echouent au lancement, executez <code>install_nutri.bat</code> en administrateur. Ce script verifie votre version Python, met a jour pip et installe tous les modules automatiquement.
+    </span>
+  </div>
+
+  <div class="req-grid">
+    <div class="req-card">
+      <div class="req-card-title">Requis</div>
+      <div class="req-item"><span class="req-dot"></span><span>Python <strong>3.10+</strong><span class="req-sub">tkinter inclus par defaut</span></span></div>
+      <div class="req-item"><span class="req-dot"></span><span>ttkbootstrap<span class="req-sub">theme visuel moderne</span></span></div>
+      <div class="req-item"><span class="req-dot"></span><span>json, os, shutil, uuid, difflib<span class="req-sub">bibliotheques standard Python</span></span></div>
+    </div>
+    <div class="req-card">
+      <div class="req-card-title">Optionnel</div>
+      <div class="req-item"><span class="req-dot req-dot-warn"></span><span>requests<span class="req-sub">recherche web nutritionnelle</span></span></div>
+      <div class="req-item"><span class="req-dot req-dot-warn"></span><span>beautifulsoup4<span class="req-sub">scraping etiquettes</span></span></div>
+      <div class="req-item"><span class="req-dot req-dot-warn"></span><span>Pillow + pytesseract + opencv<span class="req-sub">OCR et traitement images</span></span></div>
+    </div>
+    <div class="req-card">
+      <div class="req-card-title">Systeme</div>
+      <div class="req-item"><span class="req-dot"></span><span>Windows 10 / 11<span class="req-sub">fichier .bat fourni</span></span></div>
+      <div class="req-item"><span class="req-dot"></span><span>macOS 12+<span class="req-sub">python main.py</span></span></div>
+      <div class="req-item"><span class="req-dot"></span><span>Linux (Debian, Arch...)<span class="req-sub">tkinter via gestionnaire de paquets</span></span></div>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-bar">
+      <span class="code-lang">bash &mdash; verifier Python</span>
+      <button class="copy-btn" onclick="copyCode(this,'req1')">copier</button>
+    </div>
+    <pre><code id="req1"><span class="k">python</span> --version
+<span class="c"># Python 3.10.x ou superieur</span>
+
+<span class="c"># Si la version est inferieure ou si des modules manquent :</span>
+<span class="c"># lancez install_nutri.bat en administrateur</span></code></pre>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- STRUCTURE -->
+<section class="s" id="structure">
+  <p class="s-label">Structure</p>
+  <h2>Organisation du projet</h2>
+  <p class="s-sub">Le projet est volontairement simple : Python pur, pas de framework, donnees en JSON.</p>
+
+  <div class="tree-block">
+    <div class="tree-line"><span style="color:var(--muted)">NutriTracker/</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name">main.py</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;point d'entree, verification dependances</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name">lancer_nutri.bat</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;raccourci Windows</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name">install_nutri.bat</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;installation automatique des dependances</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name">config.json</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cle API Groq (optionnel)</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name dir">data/</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">│&nbsp;&nbsp; ├──</span> <span class="tree-name">aliments.json</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;base alimentaire (70+ entrees)</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">│&nbsp;&nbsp; ├──</span> <span class="tree-name">journal.json</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entrees quotidiennes par date</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">│&nbsp;&nbsp; ├──</span> <span class="tree-name">objectifs.json</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;profil utilisateur et objectifs</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">│&nbsp;&nbsp; ├──</span> <span class="tree-name">supplements.json</span> <span class="tree-cmt">&nbsp;&nbsp;catalogue et prises quotidiennes</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">│&nbsp;&nbsp; └──</span> <span class="tree-name">sante.json</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mesures corporelles historisees</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name dir">models/</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dataclasses : Aliment, EntreeJournal, Profil</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name dir">database/</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lecture / ecriture JSON</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name dir">ui/</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fenetre principale, graphiques, sante</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">├──</span> <span class="tree-name dir">nutrition/</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;analyse, scores, suggestions</span></div>
+    <div class="tree-line"><span style="color:var(--muted)">└──</span> <span class="tree-name dir">utils/</span> <span class="tree-cmt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;enrichissement IA (Groq)</span></div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- INSTALLATION -->
+<section class="s" id="installation">
+  <p class="s-label">Installation</p>
+  <h2>Lancer NutriTracker</h2>
+  <p class="s-sub">Cinq minutes, pas de compilation, pas de base de donnees a configurer.</p>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Cloner le depot</div>
+        <div class="step-desc">Telechargez les sources via Git ou depuis la page releases GitHub.</div>
+        <div class="code-block">
+          <div class="code-bar"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this,'c1')">copier</button></div>
+          <pre><code id="c1"><span class="k">git clone</span> https://github.com/Vindows/NutriTracker.git
+<span class="k">cd</span> NutriTracker</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Installer les dependances <span style="color:var(--muted);font-weight:300">&mdash; Windows</span></div>
+        <div class="step-desc">Double-cliquez sur <code style="font-size:12px;background:var(--surface3);border:1px solid var(--border2);padding:2px 8px;border-radius:4px;color:var(--text)">install_nutri.bat</code> en administrateur. Le script verifie Python 3.10+, met a jour pip et installe tous les modules requis et optionnels automatiquement.</div>
+        <div class="code-block">
+          <div class="code-bar"><span class="code-lang">batch</span><button class="copy-btn" onclick="copyCode(this,'c2')">copier</button></div>
+          <pre><code id="c2"><span class="c"># ou depuis le terminal :</span>
+install_nutri.bat</code></pre>
+        </div>
+        <p class="step-note">Si Python est inferieur a 3.10, le script vous redirige vers python.org automatiquement.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Installer les dependances <span style="color:var(--muted);font-weight:300">&mdash; macOS / Linux</span></div>
+        <div class="code-block">
+          <div class="code-bar"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this,'c3')">copier</button></div>
+          <pre><code id="c3"><span class="k">python</span> -m venv .venv
+<span class="k">source</span> .venv/bin/activate
+
+<span class="k">pip install</span> ttkbootstrap requests beautifulsoup4 Pillow</code></pre>
+        </div>
+        <p class="step-note">Sur Ubuntu/Debian, installez tkinter via : sudo apt install python3-tk</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Lancer l'application</div>
+        <div class="code-block">
+          <div class="code-bar"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this,'c4')">copier</button></div>
+          <pre><code id="c4"><span class="k">python</span> main.py
+
+<span class="c"># Windows : double-clic sur lancer_nutri.bat</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Enrichissement IA Groq <span style="color:var(--muted);font-weight:300">&mdash; optionnel, gratuit</span></div>
+        <div class="step-desc">Creez un compte gratuit sur <a href="https://console.groq.com" target="_blank">console.groq.com</a>, generez une cle API et renseignez-la dans config.json. L'application enrichira automatiquement la base d'aliments a chaque lancement via LLaMA 3.</div>
+        <div class="code-block">
+          <div class="code-bar"><span class="code-lang">json &mdash; config.json</span><button class="copy-btn" onclick="copyCode(this,'c5')">copier</button></div>
+          <pre><code id="c5">{
+  <span class="k">"groq_api_key"</span>: <span class="s">"votre_cle_api_ici"</span>
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-copy">NutriTracker &mdash; Licence MIT &mdash; 2026 Vindows</span>
+    <div class="footer-links">
+      <a href="https://github.com/Vindows/NutriTracker">GitHub</a>
+      <a href="https://github.com/Vindows/NutriTracker/issues">Signaler un bug</a>
+      <a href="https://github.com/Vindows/NutriTracker/blob/main/LICENSE">Licence</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function copyCode(btn,id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const txt=el.innerText;
+  navigator.clipboard.writeText(txt).then(()=>{
+    btn.textContent='copie !';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='copier';btn.classList.remove('copied')},2000);
+  });
+}
+</script>
+</body>
+</html>

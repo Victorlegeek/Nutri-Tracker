@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "profil": {
+    "nom": "",
+    "age": 25,
+    "taille_cm": 175.0,
+    "poids_kg": 75.0,
+    "sexe": "homme",
+    "activite": "moderee",
+    "objectif": "seche"
+  },
+  "objectifs_journaliers": {
+    "calories": 2137,
+    "proteines": 165,
+    "glucides": 213,
+    "lipides": 59,
+    "fibres": 25,
+    "sel": 6,
+    "sucres": 26
+  }
+}

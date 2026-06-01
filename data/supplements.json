@@ -1,0 +1,66 @@
+{
+  "version": "1.0",
+  "supplements": [
+    {
+      "id": "whey001",
+      "nom": "Whey protéine (nature)",
+      "type": "Protéine",
+      "dose_habituelle": 30,
+      "kcal_dose": 111,
+      "prot_dose": 22.5,
+      "gluc_dose": 3.0,
+      "lip_dose": 1.5,
+      "marque": "Standard",
+      "note": "Après entraînement"
+    },
+    {
+      "id": "creat001",
+      "nom": "Créatine monohydrate",
+      "type": "Créatine",
+      "dose_habituelle": 5,
+      "kcal_dose": 0,
+      "prot_dose": 0,
+      "gluc_dose": 0,
+      "lip_dose": 0,
+      "marque": "Standard",
+      "note": "Le matin avec eau"
+    },
+    {
+      "id": "omeg001",
+      "nom": "Oméga 3",
+      "type": "Acides gras",
+      "dose_habituelle": 2,
+      "kcal_dose": 18,
+      "prot_dose": 0,
+      "gluc_dose": 0,
+      "lip_dose": 2.0,
+      "marque": "Standard",
+      "note": "2 capsules au repas"
+    },
+    {
+      "id": "vitd001",
+      "nom": "Vitamine D3",
+      "type": "Vitamine",
+      "dose_habituelle": 1,
+      "kcal_dose": 0,
+      "prot_dose": 0,
+      "gluc_dose": 0,
+      "lip_dose": 0,
+      "marque": "Standard",
+      "note": "1 capsule le matin"
+    },
+    {
+      "id": "magn001",
+      "nom": "Magnésium bisglycinate",
+      "type": "Minéral",
+      "dose_habituelle": 2,
+      "kcal_dose": 0,
+      "prot_dose": 0,
+      "gluc_dose": 0,
+      "lip_dose": 0,
+      "marque": "Standard",
+      "note": "Le soir avant de dormir"
+    }
+  ],
+  "prises": {}
+}
